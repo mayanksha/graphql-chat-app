@@ -7,7 +7,10 @@ import Message from './Message';
 import Registration from './Frontpage';
 
 import * as compose from 'lodash.flowright';
-import { graphql } from 'react-apollo';
+import { graphql } from '@apollo/client/react/hoc';
+
+import { gql } from '@apollo/client';
+
 import {
   UserQuery,
   CreateUserMutation,
@@ -16,11 +19,20 @@ import {
   DeleteUserSubscription
 } from './User-Query';
 
-const App = props => {
-  const user =
-    (localStorage.getItem('token') &&
+/* const runQuery = (props) => {
+ *   return render(
+ *     <div>
+ *       )
+ * } */
+
+const App = (props) => {
+  const user = (localStorage.getItem('token') &&
       JSON.parse(localStorage.getItem('token') as string)) ||
     {};
+
+  let [loading, error, data] = [null, null, null];
+
+  console.log(data);
 
   const [receiverState, setReceiverState] = useState({
     receiverMail: '',
@@ -44,31 +56,32 @@ const App = props => {
 
   useEffect(() => {
     const subscribeToMore = props.data.subscribeToMore;
-    subscribeToMore({
-      document: AddUserSubscription,
-      updateQuery: (prev, { subscriptionData }) => {
-        if (!subscriptionData.data) return prev;
-        const user = subscriptionData.data.newUser;
-        if (!prev.users.find(x => x.id === user.id)) {
-          return { ...prev, users: [...prev.users, user] };
-        }
-        return prev;
-      }
-    });
-    subscribeToMore({
-      document: DeleteUserSubscription,
-      updateQuery: (prev, { subscriptionData }) => {
-        if (!subscriptionData.data) return prev;
-        const oldUser = subscriptionData.data.oldUser;
-        if (prev.users.some(x => x.email === oldUser)) {
-          const newUsers = prev.users.filter(x => x.email !== oldUser);
-          prev.users = newUsers;
-          return prev;
-        }
-        setUserLeft(oldUser);
-        return prev;
-      }
-    });
+/*     subscribeToMore({
+ *       document: AddUserSubscription,
+ *       updateQuery: (prev, { subscriptionData }) => {
+ *         if (!subscriptionData.data) return prev;
+ *         const user = subscriptionData.data.newUser;
+ *         if (!prev.users.find(x => x.id === user.id)) {
+ *           return { ...prev, users: [...prev.users, user] };
+ *         }
+ *         return prev;
+ *       }
+ *     });
+ * 
+ *     subscribeToMore({
+ *       document: DeleteUserSubscription,
+ *       updateQuery: (prev, { subscriptionData }) => {
+ *         if (!subscriptionData.data) return prev;
+ *         const oldUser = subscriptionData.data.oldUser;
+ *         if (prev.users.some(x => x.email === oldUser)) {
+ *           const newUsers = prev.users.filter(x => x.email !== oldUser);
+ *           prev.users = newUsers;
+ *           return prev;
+ *         }
+ *         setUserLeft(oldUser);
+ *         return prev;
+ *       }
+ *     }); */
   }, [props.data]);
 
   const createUser = async (email, name) => {
@@ -100,9 +113,9 @@ const App = props => {
   };
 
   const { receiverMail, receiverName } = receiverState;
-  const {
-    data: { users, error, loading }
-  } = props;
+
+  let users = null;
+  [users, error, loading] = [props.data.users, props.data.error, props.data.loading];
 
   if (loading || error) return null;
   if (localStorage.getItem('token')) {

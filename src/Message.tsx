@@ -3,7 +3,7 @@ const React = require('react');
 import { useState, useEffect, useRef } from 'react';
 
 import * as compose from 'lodash.flowright';
-import { graphql } from 'react-apollo';
+import { graphql } from '@apollo/client/react/hoc';
 import TextField from '@material-ui/core/TextField';
 import moment from 'moment';
 import {

@@ -2,29 +2,41 @@
 const React = require('react');
 const ReactDOM = require('react-dom');
 
-import ApolloClient from "apollo-client";
-import { ApolloProvider } from "react-apollo";
-import { split } from 'apollo-link';
-import { HttpLink } from 'apollo-link-http';
-import { WebSocketLink } from 'apollo-link-ws';
-import { getMainDefinition } from 'apollo-utilities';
-import { InMemoryCache } from 'apollo-cache-inmemory'
+import { ApolloProvider, ApolloClient, split, HttpLink } from '@apollo/client'
+import { WebSocketLink } from '@apollo/link-ws';
+
+import { getMainDefinition } from '@apollo/client/utilities';
+import { InMemoryCache } from '@apollo/client/cache';
+import { BrowserRouter, Route, Link } from 'react-router-dom';
+
 import App from "./App";
+import Message from "./Message";
 
 import "./index.css";
 
 // Create an http link:
 const httpLink = new HttpLink({
-  uri: 'http://localhost:4000/'
+  uri: 'https://mayanksha-hasura-testing.herokuapp.com/v1/graphql',
+  headers: {
+    Authorization: `Bearer ${process.env.REACT_APP_HASURA_ADMIN_SECRET}`,
+  }
 });
 
 // Create a WebSocket link:
 const wsLink = new WebSocketLink({
-  uri: `ws://localhost:4000/`,
+  uri: `ws://mayanksha-hasura-testing.herokuapp.com/v1/graphql`,
   options: {
     reconnect: true,
     lazy: true,
     inactivityTimeout: 30000,
+    connectionParams: async () => {
+      console.log(`Bearer ${process.env.REACT_APP_HASURA_ADMIN_SECRET}`);
+      return {
+        headers: {
+          Authorization: `Bearer ${process.env.REACT_APP_HASURA_ADMIN_SECRET}`,
+        },
+      }
+    },
   }
 });
 
@@ -37,7 +49,6 @@ const link = split(
     return definition.kind === 'OperationDefinition' && definition.operation === 'subscription';
   },
   wsLink,
-  httpLink,
 );
 
 const client = new ApolloClient({
@@ -46,8 +57,13 @@ const client = new ApolloClient({
 })
 
 ReactDOM.render(
-  <ApolloProvider client={client}>
-    <App />
-  </ApolloProvider>,
+  <BrowserRouter>
+    <ApolloProvider client={client}>
+      <div>
+        <Route exact path="/" component={App} />
+        <Route exact path="/chat" component={Message} />
+      </div>
+    </ApolloProvider>
+  </BrowserRouter>,
   document.getElementById("root")
 );
