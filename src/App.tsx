@@ -9,7 +9,7 @@ import Registration from './Frontpage';
 import * as compose from 'lodash.flowright';
 import { graphql } from '@apollo/client/react/hoc';
 
-import { gql } from '@apollo/client';
+import { gql, useQuery } from '@apollo/client';
 
 import {
   UserQuery,
@@ -32,8 +32,6 @@ const App = (props) => {
 
   let [loading, error, data] = [null, null, null];
 
-  console.log(data);
-
   const [receiverState, setReceiverState] = useState({
     receiverMail: '',
     receiverName: ''
@@ -54,9 +52,9 @@ const App = (props) => {
     setHidden(!hidden);
   };
 
-  useEffect(() => {
-    const subscribeToMore = props.data.subscribeToMore;
-/*     subscribeToMore({
+/*   useEffect(() => {
+ *     const subscribeToMore = props.data.subscribeToMore;
+ *     subscribeToMore({
  *       document: AddUserSubscription,
  *       updateQuery: (prev, { subscriptionData }) => {
  *         if (!subscriptionData.data) return prev;
@@ -81,8 +79,8 @@ const App = (props) => {
  *         setUserLeft(oldUser);
  *         return prev;
  *       }
- *     }); */
-  }, [props.data]);
+ *     }); 
+ *   }, [props.data]); */
 
   const createUser = async (email, name) => {
     await props.createUser({
@@ -97,8 +95,15 @@ const App = (props) => {
         }
         store.writeQuery({ query: UserQuery, data });
       }
-    });
+    }); 
   };
+
+  let temp = useQuery(UserQuery);
+  const [tLoading, tErr, tData] = [temp.loading, temp.error, temp.data];
+
+  if (tLoading) console.log('Loading');
+  if (tErr) console.error(tErr);
+
 
   const deleteUser = async email => {
     localStorage.removeItem('token');
@@ -109,7 +114,7 @@ const App = (props) => {
         data.users = data.users.filter(x => x.email !== email);
         store.writeQuery({ query: UserQuery, data });
       }
-    });
+    }); 
   };
 
   const { receiverMail, receiverName } = receiverState;
@@ -117,12 +122,13 @@ const App = (props) => {
   let users = null;
   [users, error, loading] = [props.data.users, props.data.error, props.data.loading];
 
-  if (loading || error) return null;
+  /* if (loading || error) return null; */
   if (localStorage.getItem('token')) {
     return (
       <div className="chat-page">
+        <p> Chat Page</p>
         <User
-          style={{ display: hidden ? 'none' : 'block' }}
+          style={{ display: 'block' }}
           users={users}
           email={user.email}
           name={user.name}
@@ -130,12 +136,12 @@ const App = (props) => {
           deleteUser={deleteUser}
         />
         <Message
-          style={{ display: hidden ? 'block' : 'none' }}
+          style={{ display: 'block' }}
           email={user.email}
           receiverMail={receiverMail}
           receiverName={receiverName}
           userLeft={userLeft}
-          name={user.name}
+          name={user.email}
           setStyle={setStyle}
         />
       </div>

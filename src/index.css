@@ -28,12 +28,21 @@ body {
 }
 
 .select-user {
-  background-color: #2196f3;
+  float: left;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
   color: white;
   font-weight: bold;
-  margin: 5px 0;
+  margin: 10px;
+  margin-top: 50px;
+  width:25%;
+  padding:2px 4px; 
 }
 
+.cBlack {
+  color: black
+}
 p {
   font-weight: bold;
 }
@@ -186,7 +195,7 @@ p {
   }
   .personal-chat {
     display: block !important;
-    width: 70%;
+    width: 100%;
     float: right;
   }
   .back-button {
@@ -199,6 +208,6 @@ p {
     width: 25%
   }
   .personal-chat {
-    width: 75%
+    width: 100%
   }
 }

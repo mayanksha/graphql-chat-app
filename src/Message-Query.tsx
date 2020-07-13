@@ -5,75 +5,54 @@ const MessageQuery = gql`
     messages {
       id
       message
-      senderMail
-      receiverMail
+      roomID
+      senderID
       timestamp
-      users {
-        name
-        email
-      }
     }
   }
 `;
 
 const CreateMessageMutation = gql`
-  mutation(
-    $message: String!
-    $senderMail: String!
-    $receiverMail: String!
-    $timestamp: Float!
-  ) {
-    createMessage(
-      message: $message
-      senderMail: $senderMail
-      receiverMail: $receiverMail
-      timestamp: $timestamp
-    ) {
-      message
-      senderMail
-      receiverMail
+mutation MyMutation ($message: String!, $roomID: Int, $senderID: Int) {
+  insert_messages(objects: {message: $message, roomID: $roomID, senderID: $senderID}) {
+    returning {
       id
+      message
+      roomID
+      senderID
       timestamp
-      users {
-        name
-        email
-      }
     }
   }
+}
 `;
 
-const UserTypingMutation = gql`
-  mutation($email: String!, $receiverMail: String!) {
-    userTyping(email: $email, receiverMail: $receiverMail)
-  }
-`;
+/* const UserTypingMutation = gql`
+ *   mutation($email: String!, $receiverMail: String!) {
+ *     userTyping(email: $email, receiverMail: $receiverMail)
+ *   }
+ * `; */
 
 const MessageSubscription = gql`
-  subscription($receiverMail: String!) {
-    newMessage(receiverMail: $receiverMail) {
-      message
-      senderMail
-      receiverMail
+  subscription ($roomID: Int) {
+    messages(where: {roomID: {_eq: $roomID}}, order_by: {timestamp: desc}) {
       id
+      message
+      roomID
+      senderID
       timestamp
-      users {
-        name
-        email
-      }
     }
   }
 `;
 
-const UserTypingSubscription = gql`
-  subscription($receiverMail: String!) {
-    userTyping(receiverMail: $receiverMail)
-  }
-`;
+/* const UserTypingSubscription = gql`
+ *   subscription($receiverMail: String!) {
+ *     userTyping(receiverMail: $receiverMail)
+ *   }
+ * `; */
 
 export {
   MessageQuery,
   CreateMessageMutation,
-  UserTypingMutation,
+  /* UserTypingMutation, */
   MessageSubscription,
-  UserTypingSubscription
 };

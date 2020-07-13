@@ -2,52 +2,46 @@ import { gql } from '@apollo/client';
 
 const UserQuery = gql`
   query {
-    users {
+    user {
       id
-      name
-      email
-      messages {
-        message
-        senderMail
-        receiverMail
-      }
+      username
     }
   }
 `;
 
+const UserQueryByEmail = gql`
+query ($username: String!){
+  rooms {
+    id
+    users
+  }
+  user(where: {username: {_eq: $username}})
+}
+`;
+
 const CreateUserMutation = gql`
-  mutation($name: String!, $email: String!) {
-    createUser(name: $name, email: $email) {
-      name
-      email
-      id
-      messages {
-        message
-        senderMail
-        receiverMail
+  mutation($username: String!, $password: String!) {
+    createUser(username: $username, password: $password) {
+      returning {
+        id
+        creationDate
+        username
       }
     }
   }
 `;
 
 const DeleteUserMutation = gql`
-  mutation($email: String!) {
-    deleteUser(email: $email)
+  mutation($username: String!) {
+    deleteUser(email: $username)
   }
 `;
 
 const AddUserSubscription = gql`
   subscription {
     newUser {
-      name
-      email
+      username 
       id
-      messages {
-        message
-        senderMail
-        receiverMail
-        timestamp
-      }
     }
   }
 `;

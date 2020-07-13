@@ -27,7 +27,11 @@ class Login extends React.Component<any, MyState> {
   _handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     auth.login(this.state.email, this.state.password)
-      .then((res) => this._nextPath('/chat'))
+      .then((res) => {
+        this._nextPath('/chat');
+        console.log(res)
+        localStorage.setItem('email', this.state.email);
+      })
       .catch(err => {
         console.error(err);
         this.setState({ error: err })
@@ -46,6 +50,7 @@ class Login extends React.Component<any, MyState> {
     console.log("Logging out!");
     auth.logout();
 
+    localStorage.removeItem('email');
     if (this.props._refresh)
       this.props._refresh();
   }
@@ -68,6 +73,7 @@ class Login extends React.Component<any, MyState> {
     return(
       <div>
       <button onClick={ this._logout }>You are logged in ! Click to logout !</button>
+      <button onClick={ () => this._nextPath('/chat') }>Click here to go to chat !</button>
       </div>
     )
   }

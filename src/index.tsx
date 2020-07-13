@@ -17,9 +17,10 @@ import "./index.css";
 // Create an http link:
 const httpLink = new HttpLink({
   uri: 'https://mayanksha-hasura-testing.herokuapp.com/v1/graphql',
-  headers: {
-    Authorization: `Bearer ${process.env.REACT_APP_HASURA_ADMIN_SECRET}`,
-  }
+  credentials: 'include',
+  /* headers: {
+   *   'x-hasura-admin-secret': `${process.env.REACT_APP_HASURA_ADMIN_SECRET}`
+   * } */
 });
 
 // Create a WebSocket link:
@@ -29,16 +30,15 @@ const wsLink = new WebSocketLink({
     reconnect: true,
     lazy: true,
     inactivityTimeout: 30000,
-    connectionParams: async () => {
-      console.log(`Bearer ${process.env.REACT_APP_HASURA_ADMIN_SECRET}`);
-      return {
-        headers: {
-          Authorization: `Bearer ${process.env.REACT_APP_HASURA_ADMIN_SECRET}`,
-        },
-      }
-    },
+    /* connectionParams: async () => {
+     *   return {
+     *     headers: {
+     *       'x-hasura-admin-secret': `${process.env.REACT_APP_HASURA_ADMIN_SECRET}`
+     *     },
+     *   }
+     * }, */
   }
-});
+}); 
 
 // using the ability to split links, you can send data to each link
 // depending on what kind of operation is being sent
@@ -49,7 +49,8 @@ const link = split(
     return definition.kind === 'OperationDefinition' && definition.operation === 'subscription';
   },
   wsLink,
-);
+  httpLink,
+); 
 
 const client = new ApolloClient({
   link,
