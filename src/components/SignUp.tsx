@@ -19,7 +19,6 @@ class SignUp extends React.Component<MyProps, MyState> {
   _handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     auth.signup(this.state.email, this.state.password);
-    localStorage.setItem('email', this.state.email);
   }
 
   _handleEmailChange = (e) => {

@@ -4,6 +4,7 @@ import auth0, { WebAuth } from 'auth0-js';
 
 export default class AuthService extends EventEmitter {
   private auth0: auth0.WebAuth;
+
   constructor(clientId, domain) {
     super();
     // Configure Auth0
@@ -24,9 +25,10 @@ export default class AuthService extends EventEmitter {
       this.auth0.client.login({ realm: 'Custom', username, password }, (err, authResult) => {
         if (err) 
           return reject(err);
-        
+       
         if (authResult && authResult.idToken && authResult.accessToken) {
           this.setToken(authResult.accessToken, authResult.idToken);
+          localStorage.setItem('email', (username as string).toLowerCase());
 
           window.location = window.location.origin as any //redirect to main page
         }
@@ -41,9 +43,11 @@ export default class AuthService extends EventEmitter {
       connection: 'Custom',
       email,
       password,
-    }, function(err) {
+    }, (err) => {
       if (err) {
         alert('Error: ' + err.description)
+      } else {
+        localStorage.setItem('email', (email as string).toLowerCase());
       }
     })
   }
@@ -106,7 +110,8 @@ export default class AuthService extends EventEmitter {
     this.auth0.logout({clientID: process.env.REACT_APP_AUTH_CLIENT_ID});
 
     // Clear user token and profile data from localStorage
-    localStorage.removeItem('id_token')
-    localStorage.removeItem('profile')
+    localStorage.removeItem('id_token');
+    localStorage.removeItem('email');
+    localStorage.removeItem('profile');
   }
 }

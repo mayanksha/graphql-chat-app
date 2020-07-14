@@ -29,8 +29,7 @@ class Login extends React.Component<any, MyState> {
     auth.login(this.state.email, this.state.password)
       .then((res) => {
         this._nextPath('/chat');
-        console.log(res)
-        localStorage.setItem('email', this.state.email);
+        console.log(res);
       })
       .catch(err => {
         console.error(err);

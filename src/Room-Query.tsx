@@ -20,7 +20,59 @@ query MyQuery ($roomID: Int, $userID: Int) {
 }
 `;
 
+const createNewRoomMutation = gql`
+mutation MyMutation ($roomName: String, $isGroup: Boolean) {
+  insert_rooms_one(object: {roomName: $roomName, isGroup: $isGroup}) {
+    id
+    isGroup
+    createdOn
+  }
+}
+`;
+
+const insertMultipleParticipantsToRoom = gql`
+mutation MyMutation($objects: [participants_insert_input!]! = {}) {
+  insert_participants(objects: $objects) {
+    returning {
+      roomID
+      userID
+      userAddedOn
+    }
+  }
+}
+`;
+
+const SenderReceiverRoomQuery = gql`
+query MyQuery($senderID: Int!, $receiverID: Int!) {
+  rooms {
+    participants(where: {userID: {_in: [$senderID, $receiverID]}}) {
+      roomID
+      userID
+      userAddedOn
+      room {
+        roomName
+      }
+    }
+  }
+}
+`;
+
+const getGroupsByUserID = gql`
+query getGroupsByUserID ($userID: Int!) {
+  rooms(where: {participants: {userID: {_eq: $userID}}, isGroup: {_eq: true}}) {
+    id
+    isGroup
+    createdOn
+    roomName
+  }
+}
+`;
+
 export {
   getAllRoomsByUserID,
-  getAllRoomsByUserIDAndRoomID
+  getAllRoomsByUserIDAndRoomID,
+  createNewRoomMutation,
+  SenderReceiverRoomQuery,
+  insertMultipleParticipantsToRoom,
+  getGroupsByUserID,
 };

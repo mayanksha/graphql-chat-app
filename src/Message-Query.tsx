@@ -26,6 +26,7 @@ mutation MyMutation ($message: String!, $roomID: Int, $senderID: Int) {
 }
 `;
 
+
 /* const UserTypingMutation = gql`
  *   mutation($email: String!, $receiverMail: String!) {
  *     userTyping(email: $email, receiverMail: $receiverMail)
@@ -33,7 +34,7 @@ mutation MyMutation ($message: String!, $roomID: Int, $senderID: Int) {
  * `; */
 
 const MessageSubscription = gql`
-  subscription ($roomID: Int) {
+  subscription onMessageAdded($roomID: Int) {
     messages(where: {roomID: {_eq: $roomID}}, order_by: {timestamp: desc}) {
       id
       message
