@@ -21,7 +21,7 @@
     "graphql": "^14.7.0",
     "jwt-decode": "^2.2.0",
     "lodash.flowright": "^3.5.0",
-    "moment": "^2.27.0",
+    "moment": "^2.29.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.2.0",
